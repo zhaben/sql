@@ -1,0 +1,37 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2511
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue254;\red0\green0\blue255;
+\red157\green0\blue210;\red144\green1\blue18;\red32\green108\blue135;\red19\green120\blue72;\red101\green76\blue29;
+}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c99608;\cssrgb\c0\c0\c100000;
+\cssrgb\c68627\c0\c85882;\cssrgb\c63922\c8235\c8235;\cssrgb\c14902\c49804\c60000;\cssrgb\c3529\c53333\c35294;\cssrgb\c47451\c36863\c14902;
+}
+\margl1440\margr1440\vieww28220\viewh10540\viewkind0
+\deftab720
+\pard\pardeftab720\sl380\partightenfactor0
+
+\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 /* \cb1 \
+\cb3 This dataset \cf4 \strokec4 is\cf2 \strokec2  similar to the main check-\cf4 \strokec4 in\cf2 \strokec2  dataset, \cf5 \strokec5 except\cf2 \strokec2  that it includes \cf6 \strokec6 "bad check-ins"\cf2 \strokec2 . \cb1 \
+\cb3 Client 1 wants to consider all checkins when sending out communications to people who might have been at the club during the time that someone later tested positive \cf5 \strokec5 for\cf2 \strokec2  covid.\cb1 \
+\cb3 Good check-\cf4 \strokec4 in\cf2 \strokec2 , a valid check-\cf4 \strokec4 in\cf2 \strokec2  (scan successful)\cb1 \
+\cb3 Bad check-\cf4 \strokec4 in\cf2 \strokec2 , an invalid check-\cf4 \strokec4 in\cf2 \strokec2  (ex. overdue bill, former member)\cb1 \
+\cb3 */\cb1 \
+\
+\cb3 /* bring \cf4 \strokec4 in\cf2 \strokec2  all checkin-\cf4 \strokec4 in\cf2 \strokec2  data \cf5 \strokec5 with\cf2 \strokec2  checkin_status field to differentiate between both good \cf4 \strokec4 and\cf2 \strokec2  bad checkins \cb1 \
+\cb3   note the checkin_date \cf4 \strokec4 and\cf2 \strokec2  checkin_ts_local_time are \cf4 \strokec4 in\cf2 \strokec2  local time \cf4 \strokec4 and\cf2 \strokec2  are more reliable than the UTC timestamp (checkin_ts_time) per discussion \cf5 \strokec5 with\cf2 \strokec2  Casey McGowan (EQX)\cb1 \
+\cb3 */\cb1 \
+\cb3 select member_id, \cb1 \
+\cb3 facility_name, \cb1 \
+\cb3 facility_code, \cb1 \
+\cb3 checkin_status, \cb1 \
+\cb3 date_part(\cf6 \strokec6 'epoch'\cf2 \strokec2 , checkin_ts_time)::\cf7 \strokec7 int\cf2 \strokec2  \cf5 \strokec5 as\cf2 \strokec2  checkin_datetime_UTC,\cb1 \
+\cb3 date_part(\cf6 \strokec6 'epoch'\cf2 \strokec2 , checkin_date)::\cf7 \strokec7 int\cf2 \strokec2  \cf5 \strokec5 as\cf2 \strokec2  checkin_date_local,\cb1 \
+\cb3 cast((substring(checkin_local_time,\cf8 \strokec8 1\cf2 \strokec2 ,charindex(\cf6 \strokec6 ':'\cf2 \strokec2 ,checkin_local_time)\cf8 \strokec8 -1\cf2 \strokec2 ))||(substring(checkin_local_time,charindex(\cf6 \strokec6 ':'\cf2 \strokec2 ,checkin_local_time)+\cf8 \strokec8 1\cf2 \strokec2 ,\cf9 \strokec9 len\cf2 \strokec2 (checkin_local_time))) \cf5 \strokec5 as\cf2 \strokec2  \cf7 \strokec7 int\cf2 \strokec2 ) \cf5 \strokec5 as\cf2 \strokec2  checkin_local_time,\cb1 \
+\cb3 md5(cast(member_id \cf5 \strokec5 as\cf2 \strokec2  varchar) || facility_name || cast(checkin_ts_time \cf5 \strokec5 as\cf2 \strokec2  varchar) || checkin_status) AS unique_id\cb1 \
+\pard\pardeftab720\sl380\partightenfactor0
+\cf5 \cb3 \strokec5 from\cf2 \strokec2  simon.event_all_checkins\cb1 \
+\pard\pardeftab720\sl380\partightenfactor0
+\cf2 \cb3 where date_part(\cf6 \strokec6 'epoch'\cf2 \strokec2 , checkin_ts_time)::\cf7 \strokec7 int\cf2 \strokec2  > date_part(\cf6 \strokec6 'epoch'\cf2 \strokec2 , \cf6 \strokec6 '2020-06-10 15:31:05'\cf2 \strokec2 )::\cf7 \strokec7 int\cf2 \cb1 \strokec2 \
+\cb3 --where date_part(\cf6 \strokec6 'epoch'\cf2 \strokec2 ,checkin_ts_time)::\cf7 \strokec7 int\cf2 \strokec2  > \cf8 \strokec8 1593204338\cf2 \cb1 \strokec2 \
+}
